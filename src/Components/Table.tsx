@@ -11,7 +11,8 @@ const Table = () => {
   const [pagination, setPagination] = useState<IPaginator>();
   const [currentPage, setCurrentPage] = useState(1);
   const [rowClick, setRowClick] = useState(false);
-  const [selectedProducts, setSelectedProducts] = useState<IArtwork[]>([]);
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [rowsValue, setRowsValue] = useState(0);
   const op = useRef(null);
 
   const fetchData = async (page = 1) => {
@@ -40,15 +41,19 @@ const Table = () => {
     fetchData(e.page + 1);
   };
 
+  const onChangeRows = () => {
+    setSelectedRows(artworks.slice(0, rowsValue));
+  };
+
   return (
     <>
       <DataTable
         loading={loading}
         selectionMode={rowClick ? null : 'checkbox'}
-        selection={selectedProducts}
+        selection={selectedRows}
         first={(currentPage - 1) * 12}
         lazy
-        onSelectionChange={(e) => setSelectedProducts(e.value)}
+        onSelectionChange={(e) => setSelectedRows(e.value)}
         dataKey='id'
         onPage={onPageChange}
         value={artworks}
@@ -89,12 +94,17 @@ const Table = () => {
                 }}
               >
                 <input
+                  value={rowsValue}
+                  onChange={(e) => setRowsValue(e.target.value)}
                   type='number'
-                  onChange={() => {}}
+                  min={1}
+                  max={pagination?.total}
                   placeholder='select rows...'
                   style={{ width: '100%', padding: '12px' }}
                 />
-                <button style={{ padding: '10px' }}>Submit</button>
+                <button style={{ padding: '10px' }} onClick={onChangeRows}>
+                  Submit
+                </button>
               </OverlayPanel>
             </>
           }
